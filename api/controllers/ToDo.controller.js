@@ -1,9 +1,5 @@
-const todo = [{id: 1, content:'Learn NodeJS'}, 
-    {id: 2, content:'Learn React'}, 
-    {id: 3, content:'Learn Angular'}, 
-    {id: 4, content:'Learn Python'},
-    {id: 5, content:'Learn DataBase'}, 
-];
+//Model
+const {todo}=require('../models/Todo.model');
 
 //Get fetch all ToDos
 exports.getAllTodo = (req, res) => {
