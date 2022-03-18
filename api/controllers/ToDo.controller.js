@@ -1,51 +1,60 @@
 //Model
-const {todo}=require('../models/Todo.model');
+const {todo} = require('../models/Todo.model');
+const {user} = require('../models/Todo.model');
+
 
 //Get fetch all ToDos
-exports.getAllTodo = (req, res) => {
+exports.getAllTodo = catchAsync(async (req, res, next) => {
+	const todos = await todo.findAll({
+		where: { status: 'pending' },
+		include: [
+			{
+				model: user,
+				attributes: { exclude: ['password'] },
+			},
+		],
+	});
 
-    res.status(200).json({
-        status: 'succes', 
-        data: {todo},
-    });
-};
+	res.status(200).json({
+		status: 'success',
+		data: { todos },
+	});
+});
 
 //Create new ToDo
-exports.createTodo = (req, res) => {
-    
-    const  {content} = req.body
+exports.createTodo = catchAsync(async (req, res, next) => {
+	const { content, userId } = req.body;
 
-    const lastestId = todo[todo.length - 1 ].id
+	const newTodo = await todo.create({ content, userId });
 
-    const newTodo = {
-        id: lastestId + 1,
-        content
-    }
-
-    todo.push(newTodo)
-
-    res.status(201).json( { status: 'succes', data: {newTodo} } )     //el 201 dice: tu ruta a sido creada con exito pero se ha creado un recurso
-}
+	res.status(201).json({
+		status: 'success',
+		data: { newTodo },
+	});
+});
 
 //Update ToDo given an ID
-exports.updateTodo = (req, res) => {
-    const {id} = req.params
-    const {content} = req.body
+exports.updateTodo = catchAsync(async (req, res, next) => {
+	const { id } = req.params;
+	const { content } = req.body;
 
-    const toDo = todo.find(todo => todo.id === +id)
+	const todoExist = await todo.findOne({ where: { id } });
 
-    todo.content = content
+	await todoExists.update({ content });
 
-    res.status(200).json({status: 'succes', data: {updatedTodo: toDo}} )
-}
+	res.status(204).json({
+		status: 'success',
+	});
+});
 
 //Delete ToDo given an ID
 exports.deleteTodo = catchAsync(async (req, res) => {
 	const { id } = req.params;
+    const { content } = req.body;
 
-	const todoExists = await todo.findOne({ where: { id } });
+	const todoExist = await todo.findOne({ where: { id } });
 
-	if (!todoExists) {
+	if (!todoExist) {
 		res.status(404).json({
             status: 'error',
             message: 'Cant delete ToDo, invalid ID'
@@ -53,7 +62,7 @@ exports.deleteTodo = catchAsync(async (req, res) => {
         return;
 	}
 
-	await todoExists.destroy();
+	await todoExist.destroy();
 	
 	res.status(204).json({
 		status: 'success',
