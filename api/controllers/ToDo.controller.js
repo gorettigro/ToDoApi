@@ -2,7 +2,6 @@
 const {todo} = require('../models/Todo.model');
 const {user} = require('../models/Todo.model');
 
-
 //Get fetch all ToDos
 exports.getAllTodo = catchAsync(async (req, res, next) => {
 	const todos = await todo.findAll({
